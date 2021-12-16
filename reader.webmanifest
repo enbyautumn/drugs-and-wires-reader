@@ -1,0 +1,16 @@
+{
+    "name": "Drugs & Wires Reader",
+    "short_name": "D&W Reader",
+    "description": "A PWA for reading the webcomic Drugs & Wires.",
+    "icons": [
+        {
+        "src": "https://www.drugsandwires.fail/wp-content/uploads/2018/11/dslogo.png",
+        "sizes": "421x421",
+        "type": "image/png"
+        }
+    ],
+    "start_url": "/",
+    "display": "fullscreen",
+    "theme_color": "#181a1b",
+    "background_color": "#181a1b"
+}
