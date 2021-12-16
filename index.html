@@ -11,8 +11,17 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/swiped-events@1.1.6/dist/swiped-events.min.js"></script>
 
+    <link rel="icon" href="https://www.drugsandwires.fail/wp-content/uploads/2018/11/dslogo.png">
+
     <meta name="desciption" content="A mobile PWA reader for the Drugs & Wires webcomic">
     <link rel="manifest" href="reader.webmanifest">
+    <meta name="theme-color" content="#181a1b">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+        }
+    </script>
 
 </head>
 <body>

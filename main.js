@@ -86,9 +86,12 @@ let pageIndex = {}
 if (localStorage.getItem('saveDate') && Date.now() - localStorage.getItem('saveDate') < hoursToMS(.1)) {       
     pageIndex = JSON.parse(localStorage.getItem('pageIndex'))
 }
+
+loadPage(currentPage)
+
 loadIndex().then(pages => {
     pageIndex = {...pages, ...pageIndex}
-}).then(loadPage(currentPage))
+}).then(e => loadPage(currentPage))
 
 async function loadPage(pageNum) {
     if (pageNum < 0) {
@@ -180,5 +183,3 @@ document.addEventListener('swiped-right', function(e) {
 // TODO
 // - make it a PWA
 // - make it some better colors
-
-loadPage(currentPage)
