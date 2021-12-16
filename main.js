@@ -129,48 +129,52 @@ window.addEventListener("hashchange", () => {
 
 document.getElementById("full-left").addEventListener("click", (e) => {
     currentPage = 0
-    loadPage(currentPage)
+    // loadPage(currentPage)
     setPageNum(currentPage)
 })
 
 document.getElementById("full-right").addEventListener("click", (e) => {
     currentPage = Object.keys(pageIndex).length - 1
-    loadPage(currentPage)
+    // loadPage(currentPage)
     setPageNum(currentPage)
 })
 
 document.getElementById("left").addEventListener("click", (e) => {
     currentPage--
-    loadPage(currentPage)
+    // loadPage(currentPage)
     setPageNum(currentPage)
 })
 
 document.getElementById("right").addEventListener("click", (e) => {
     currentPage++
-    loadPage(currentPage)
+    // loadPage(currentPage)
     setPageNum(currentPage)
 })
 
 document.getElementById("page-input").addEventListener("change", (e) => {
     currentPage = parseInt(e.target.value) - 1
-    loadPage(currentPage)
+    // loadPage(currentPage)
     setPageNum(currentPage)
 })
 
 document.addEventListener('swiped-left', function(e) {
-    console.log(e.target)
-    console.log('swiped left')
-    currentPage++
-    loadPage(currentPage)
-    setPageNum(currentPage)
+    if (window.visualViewport.scale == 1) {
+        // console.log(e.target)
+        console.log('swiped left')
+        currentPage++
+        // loadPage(currentPage)
+        setPageNum(currentPage)
+    }
 })
 
 document.addEventListener('swiped-right', function(e) {
-    console.log(e.target)
-    console.log('swiped right')
-    currentPage--
-    loadPage(currentPage)
-    setPageNum(currentPage)
+    if (window.visualViewport.scale == 1) {
+        // console.log(e.target)
+        console.log('swiped right')
+        currentPage--
+        // loadPage(currentPage)
+        setPageNum(currentPage)
+    }
 })
 
 // TODO
