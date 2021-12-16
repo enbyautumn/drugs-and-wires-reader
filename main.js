@@ -177,6 +177,11 @@ document.addEventListener('swiped-right', function(e) {
     }
 })
 
+window.addEventListener("scroll", (e) => {
+    e.preventDefault();
+    window.scrollTo(0, 0);
+});  
+
 // TODO
 // - Make swipe not work when zoomed into image
 // - make it a PWA
