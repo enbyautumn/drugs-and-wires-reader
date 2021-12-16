@@ -58,7 +58,7 @@ async function getPageContent(page) {
 
 }
 
-let currentPage = parseInt(localStorage.getItem('pageNum')) || getPageNum() || 0;
+let currentPage = parseInt(localStorage.getItem('pageNum')) > 0 ? parseInt(localStorage.getItem('pageNum')) : getPageNum() > 0 ? getPageNum() : 0;
 console.log(currentPage)
 setPageNum(currentPage)
 
@@ -88,7 +88,7 @@ if (localStorage.getItem('saveDate') && Date.now() - localStorage.getItem('saveD
 }
 loadIndex().then(pages => {
     pageIndex = {...pages, ...pageIndex}
-})
+}).then(loadPage(currentPage))
 
 async function loadPage(pageNum) {
     if (pageNum < 0) {
@@ -177,15 +177,8 @@ document.addEventListener('swiped-right', function(e) {
     }
 })
 
-// window.addEventListener("scroll", (e) => {
-//     e.preventDefault();
-//     window.scrollTo(0, 0);
-// });  
-
 // TODO
-// - Make swipe not work when zoomed into image
 // - make it a PWA
 // - make it some better colors
-// - dont make vertical scrolly on phone
 
 loadPage(currentPage)
