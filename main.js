@@ -47,21 +47,6 @@ loadPage(currentPage).then(r => {
         }
     })
 })
-// loadPage(currentPage).then(r => {
-//     let loaded = false;
-//     loadIndex(r).then(r=>loaded = r).then(r=>{
-//         console.log(loaded)
-//         if (!loaded) {
-//             loadPage(currentPage)
-//         }
-//     })
-//     // if (!r) {
-//     //     loadIndex().then(r => {
-//     //         loadPage(currentPage)
-//     //         console.log(r)
-//     //     })        
-//     // }
-// })
 
 async function loadIndex() {
     let archive = await request('https://www.drugsandwires.fail/contents/archive/').then(res => res.text())
