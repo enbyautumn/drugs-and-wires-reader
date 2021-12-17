@@ -8,7 +8,6 @@ function unescapeHTML(string) {
     return string
         .replace(/&#038;/g, '&')
         .replace(/&#8211;/g, '-')
-    
 }
 
 let hoursToMS = (hours) => hours * 60 * 60 * 1000
@@ -21,6 +20,9 @@ function setPageNum(pageNum) {
 }
 
 async function getPageContent(page) {
+    if (page.title || page.imageUrl) {
+        return true
+    }
     let pageContent = await request(page.pageUrl).then(response => response.text())
     page.title = unescapeHTML(pageContent.match(/<h1>([^<]*)<\/h1>/g)[0].replace(/<h1>|<\/h1>/g, ''))
     page.imageUrl = pageContent.match(/src=\"[^\"]*\" class=\"attachment-full size-full/g)[0].match(/https:\/\/www.drugsandwires.fail\/wp-content\/uploads\/[^\"]*/g)[0]
@@ -82,8 +84,20 @@ async function loadPage(pageNum) {
     }
 
     if (page.title === undefined || page.imageUrl === undefined) {
+        console.log("Fetch " + currentPage)
         await getPageContent(page)
     }
+
+    let preloadMask = [-2, -1, 1, 2]
+    preloadMask.forEach((i) => {
+        if (pageIndex[currentPage + i] && (pageIndex[currentPage + i].title === undefined || pageIndex[currentPage + i].imageUrl === undefined)) {
+            getPageContent(pageIndex[currentPage + i]).then(() => {
+                let img = new Image()
+                img.src = pageIndex[currentPage + i].imageUrl
+            })
+        }
+    })
+
     document.title = page.title
     document.getElementById("content").src = page.imageUrl
     return true
