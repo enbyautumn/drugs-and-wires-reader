@@ -5,47 +5,16 @@ async function request(url) {
 }
 
 function unescapeHTML(string) {
-    return string.replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#039;/g, "'")
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8220;/g, '"')
-        .replace(/&#8221;/g, '"')
-        .replace(/&#8211;/g, '-')
-        .replace(/&#8230;/g, '...')
-        .replace(/&#8242;/g, '"')
-        .replace(/&#8243;/g, '"')
-        .replace(/&#8216;/g, "'")
-        .replace(/&#8212;/g, '--')
-        .replace(/&#8224;/g, '"')
-        .replace(/&#8225;/g, '"')
-        .replace(/&#8226;/g, '"')
-        .replace(/&#8230;/g, '...')
-        .replace(/&#8212;/g, '--')
-        .replace(/&#8240;/g, '"')
-        .replace(/&#8242;/g, '"')
-        .replace(/&#8243;/g, '"')
-        .replace(/&#8216;/g, "'")
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8218;/g, "'")
-        .replace(/&#8219;/g, "'")
-        .replace(/&#8220;/g, '"')
-        .replace(/&#8221;/g, '"')
-        .replace(/&#8222;/g, '"')
-        .replace(/&#8223;/g, '"')
+    return string
         .replace(/&#038;/g, '&')
+        .replace(/&#8211;/g, '-')
+    
 }
 
 let hoursToMS = (hours) => hours * 60 * 60 * 1000
 
-function getPageNum() {
-    let pageNum = parseInt(window.location.hash.replace('#', '')) - 1
-    return pageNum
-}
-
 function setPageNum(pageNum) {
+    currentPage = pageNum;
     localStorage.setItem('pageNum', currentPage)
     window.location.hash = pageNum + 1
     document.getElementById("page-input").value = pageNum + 1
@@ -55,131 +24,118 @@ async function getPageContent(page) {
     let pageContent = await request(page.pageUrl).then(response => response.text())
     page.title = unescapeHTML(pageContent.match(/<h1>([^<]*)<\/h1>/g)[0].replace(/<h1>|<\/h1>/g, ''))
     page.imageUrl = pageContent.match(/src=\"[^\"]*\" class=\"attachment-full size-full/g)[0].match(/https:\/\/www.drugsandwires.fail\/wp-content\/uploads\/[^\"]*/g)[0]
-
+    localStorage.setItem('pageIndex', JSON.stringify(pageIndex))
+    return true
 }
 
-let currentPage = parseInt(localStorage.getItem('pageNum')) > 0 ? parseInt(localStorage.getItem('pageNum')) : getPageNum() > 0 ? getPageNum() : 0;
-console.log(currentPage)
-setPageNum(currentPage)
+let currentPage = 0;
 
-async function loadIndex() {
+if (localStorage.getItem('pageNum') !== null) {
+    currentPage = parseInt(localStorage.getItem('pageNum'))
+} else if (window.location.hash !== '') {
+    currentPage = parseInt(window.location.hash.replace('#', '')) - 1
+} else {
+    currentPage = 0
+}
+document.getElementById("page-input").value = currentPage + 1
 
-    let archive = await request('https://www.drugsandwires.fail/contents/archive/').then(res => res.text())
-
-    let pageUrls = archive.match(/<li><a href='[^']*' class='webcomic-link webcomic1-link self-webcomic-link self-webcomic1-link'>/g)
-
-    pageUrls = pageUrls.map(page => page.match(/https:\/\/www.drugsandwires.fail\/dnwcomic\/[^']*/g)[0])
-
-    let pages = pageUrls.map(pageUrl => {
-        return {
-            pageUrl,
-            title: undefined,
-            imageUrl: undefined,
+let pageIndex = JSON.parse(localStorage.getItem('pageIndex')) || []
+loadPage(currentPage).then(r => {
+    loadIndex().then(() => {
+        if (!r) {
+            loadPage(currentPage)
         }
     })
+})
+// loadPage(currentPage).then(r => {
+//     let loaded = false;
+//     loadIndex(r).then(r=>loaded = r).then(r=>{
+//         console.log(loaded)
+//         if (!loaded) {
+//             loadPage(currentPage)
+//         }
+//     })
+//     // if (!r) {
+//     //     loadIndex().then(r => {
+//     //         loadPage(currentPage)
+//     //         console.log(r)
+//     //     })        
+//     // }
+// })
 
-    return pages
-
+async function loadIndex() {
+    let archive = await request('https://www.drugsandwires.fail/contents/archive/').then(res => res.text())
+    let pageUrls = archive.match(/<li><a href='[^']*' class='webcomic-link webcomic1-link self-webcomic-link self-webcomic1-link'>/g)
+    pageUrls = pageUrls.map(page => page.match(/https:\/\/www.drugsandwires.fail\/dnwcomic\/[^']*/g)[0])
+    let pages = []
+    for (let i = 0; i < pageUrls.length; i++) {
+        if (pageIndex[i] && (pageIndex[i].title || pageIndex[i].imageUrl)) {
+            pages.push(pageIndex[i])
+        } else {
+            pages.push({
+                pageUrl: pageUrls[i],
+                title: undefined,
+                imageUrl: undefined,
+            })
+        }
+    }
+    pageIndex = pages
+    localStorage.setItem('pageIndex', JSON.stringify(pageIndex))
+    return true
 }
-
-let pageIndex = {}
-if (localStorage.getItem('saveDate') && Date.now() - localStorage.getItem('saveDate') < hoursToMS(.1)) {       
-    pageIndex = JSON.parse(localStorage.getItem('pageIndex'))
-}
-
-loadPage(currentPage)
-
-loadIndex().then(pages => {
-    pageIndex = {...pages, ...pageIndex}
-}).then(e => loadPage(currentPage))
 
 async function loadPage(pageNum) {
-    if (pageNum < 0) {
-        currentPage = 0
-        setPageNum(currentPage)
+    if (pageNum < 0 || pageNum >= pageIndex.length) {
         return false
     }
+    
+    setPageNum(pageNum)
+    let page = pageIndex[currentPage]
 
-    if (pageNum >= (Object.keys(pageIndex).length)) {
-        currentPage = Object.keys(pageIndex).length - 1
-        setPageNum(currentPage)
-        return false
+    if (document.title == page.title && pageNum == currentPage) {
+        return true
     }
 
-    let page = pageIndex[pageNum]
-
-    if (!page.title || !page.imageUrl) {
-        console.log("Fetching page details " + pageNum)
+    if (page.title === undefined || page.imageUrl === undefined) {
         await getPageContent(page)
     }
-
-    localStorage.setItem('pageIndex', JSON.stringify(pageIndex))
-    localStorage.setItem('saveDate', Date.now())
-
     document.title = page.title
-
-    // document.getElementById("title").innerText = page.title
-
     document.getElementById("content").src = page.imageUrl
-
     return true
 }
 
 window.addEventListener("hashchange", () => {
-    currentPage = getPageNum();
-    loadPage(currentPage)
+    loadPage(parseInt(window.location.hash.replace('#', '')) - 1)
 });
 
 document.getElementById("full-left").addEventListener("click", (e) => {
-    currentPage = 0
-    // loadPage(currentPage)
-    setPageNum(currentPage)
+    loadPage(0)
 })
 
 document.getElementById("full-right").addEventListener("click", (e) => {
-    currentPage = Object.keys(pageIndex).length - 1
-    // loadPage(currentPage)
-    setPageNum(currentPage)
+    loadPage(pageIndex.length - 1)
 })
 
 document.getElementById("left").addEventListener("click", (e) => {
-    currentPage--
-    // loadPage(currentPage)
-    setPageNum(currentPage)
+    loadPage(currentPage - 1)
 })
 
 document.getElementById("right").addEventListener("click", (e) => {
-    currentPage++
-    // loadPage(currentPage)
-    setPageNum(currentPage)
+    loadPage(currentPage + 1)
 })
 
 document.getElementById("page-input").addEventListener("change", (e) => {
-    currentPage = parseInt(e.target.value) - 1
-    // loadPage(currentPage)
-    setPageNum(currentPage)
+    loadPage(parseInt(e.target.value) - 1)
 })
 
 document.addEventListener('swiped-left', function(e) {
     if (window.visualViewport.scale == 1) {
-        // console.log(e.target)
-        console.log('swiped left')
-        currentPage++
-        // loadPage(currentPage)
-        setPageNum(currentPage)
+        loadPage(currentPage + 1)
     }
 })
 
 document.addEventListener('swiped-right', function(e) {
     if (window.visualViewport.scale == 1) {
-        // console.log(e.target)
-        console.log('swiped right')
-        currentPage--
-        // loadPage(currentPage)
-        setPageNum(currentPage)
+        loadPage(currentPage - 1)
     }
 })
-
-// TODO
-// - make it a PWA
-// - make it some better colors

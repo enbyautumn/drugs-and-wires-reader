@@ -10,6 +10,7 @@
         }
     ],
     "start_url": "/",
+    "scope": "/",
     "display": "fullscreen",
     "theme_color": "#181a1b",
     "background_color": "#181a1b"
