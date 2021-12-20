@@ -10,6 +10,18 @@ function unescapeHTML(string) {
         .replace(/&#8211;/g, '-')
 }
 
+function toast(text) {
+    let toast = document.createElement("div");
+    toast.id = "toast";
+    toast.innerText = text
+    toast.className = 'show'
+    document.body.appendChild(toast)
+    setTimeout(() => {
+        toast.remove()
+    }, 2900);
+}
+
+
 function displayPageNumber(pageNum) {
     localStorage.setItem('pageNum', currentPage)
     window.location.hash = pageNum + 1
@@ -76,6 +88,8 @@ async function loadPage(pageNum) {
     }
 
     image.src = await(loadImage(page.imageUrl))
+    document.title = page.title
+    toast(page.title)
     preloadImages(preloadSeek)
     return true
 }
@@ -103,7 +117,7 @@ async function preloadImages(seek, i=0, page=currentPage) {
 }
 
 let currentPage = 0;
-let preloadSeek = 10;
+let preloadSeek = 5;
 let pageIndex = JSON.parse(localStorage.getItem('pageIndex')) || []
 let image = document.getElementById("content")
 
@@ -120,7 +134,7 @@ if (localStorage.getItem('pageNum') !== null) {
 displayPageNumber(currentPage)
 console.log(currentPage)
 
-loadIndexOfPages().then(() => loadPage(currentPage))
+loadPage(currentPage).then(() => loadIndexOfPages().then(() => loadPage(currentPage)))
 
 
 window.addEventListener("hashchange", () => {
@@ -159,5 +173,15 @@ document.addEventListener('swiped-left', function(e) {
 document.addEventListener('swiped-right', function(e) {
     if (window.visualViewport.scale == 1) {
         loadPage(currentPage - 1)
+    }
+})
+
+document.getElementById("image-container").addEventListener("click", e => {
+    if (e.target == document.getElementById("image-container")) {
+        let height = e.target.offsetHeight
+        let localPos = e.clientY - e.target.getBoundingClientRect().top
+        if (height / 2 > localPos) {
+            toast(document.title)
+        }    
     }
 })
