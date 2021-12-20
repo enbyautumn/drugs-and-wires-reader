@@ -1,3 +1,4 @@
+let update = 0
 let cacheName = 'sw-cache-v1';
 let cacheFiles = [
     '/index.html',

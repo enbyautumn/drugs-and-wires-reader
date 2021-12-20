@@ -15,6 +15,7 @@ function toast(text) {
     toast.id = "toast";
     toast.innerText = text
     toast.className = 'show'
+    toast.addEventListener('swiped-up', e => toast.remove())
     document.body.appendChild(toast)
     setTimeout(() => {
         toast.remove()
