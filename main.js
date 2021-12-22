@@ -139,7 +139,7 @@ async function loadPage(pageNum) {
 
     image.src = await(loadImage(page.imageUrl))
     document.title = page.title
-    toast(page.title)
+    image.onload = toast(page.title)
     preloadImages(preloadSeek)
     return true
 }
