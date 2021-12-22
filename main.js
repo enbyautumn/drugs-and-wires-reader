@@ -32,6 +32,10 @@ function replaceToast(toast, text) {
     toast.innerText = text;
     toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
     toast.addEventListener('swiped-down', e => killToast(toast))
+    toast.addEventListener('touchstart', e => {
+        e.preventDefault()
+        killToast(toast)
+    })
     toast.addEventListener('click', e => killToast(toast))
     toastLocation.appendChild(toast)
     setTimeout(() => {
@@ -55,6 +59,10 @@ function toast(text) {
         toast.className = 'show'
         
         toast.addEventListener('swiped-down', e => killToast(toast))
+        toast.addEventListener('touchstart', e => {
+            e.preventDefault()
+            killToast(toast)
+        })
         toast.addEventListener('click', e => killToast(toast))
         toastLocation.appendChild(toast)
         setTimeout(() => {
