@@ -77,6 +77,17 @@ img {
     color: #d8d4cf;
 }
 
+#bookmark {
+    position: relative;
+    width: 4vh;
+    height: 4vh;
+    margin: -2vh;
+    left: calc(100% - 3vh);
+    top: 1.6vh;
+
+    color: Crimson;
+}
+
 #toast {
     visibility: hidden; /* Hidden by default. Visible on click */
     background-color: #313537; /* Black background color */
@@ -91,11 +102,12 @@ img {
     backdrop-filter: blur(4.1px);
     -webkit-backdrop-filter: blur(4.1px);
 
-    width: 80vw;
+    width: inherit;
+    /* width: 80%; */
     padding: 1vh;
     box-sizing: border-box;
-    left: 10vw;
-    bottom: 10vh;
+    left: inherit;
+    bottom: 11vh;
 
     font-size: 3vh;
     font-family: 'M PLUS 2', sans-serif;
@@ -116,6 +128,12 @@ img {
     animation: fadeout 0.5s;
 }
 
+#toast.replace {
+    visibility: visible;
+    -webkit-animation: fadeout 0.5s 2.5s;
+    animation: fadeout 0.5s 2.5s;
+}
+
 @media (prefers-reduced-motion) {
     #toast.show {
         visibility: visible;
@@ -124,21 +142,21 @@ img {
 
 @-webkit-keyframes fadein {
     from {bottom: 0; opacity: 0;}
-    to {bottom: 10vh; opacity: 1;}
+    to {bottom: 11vh; opacity: 1;}
 }
 
 @keyframes fadein {
     from {bottom: 0; opacity: 0;}
-    to {bottom: 10vh; opacity: 1;}
+    to {bottom: 11vh; opacity: 1;}
 }
 
 @-webkit-keyframes fadeout {
-    from {bottom: 10vh; opacity: 1;}
+    from {bottom: 11vh; opacity: 1;}
     to {bottom: 0; opacity: 0;}
 }
 
 @keyframes fadeout {
-    from {bottom: 10vh; opacity: 1;}
+    from {bottom: 11vh; opacity: 1;}
     to {bottom: 0; opacity: 0;}
 }
   

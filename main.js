@@ -10,28 +10,57 @@ function unescapeHTML(string) {
         .replace(/&#8211;/g, '-')
 }
 
-function toast(text) {
-    let toast = document.createElement("div");
-    toast.id = "toast";
-    toast.innerText = text
-    toast.className = 'show'
-    let event = () => {
+function killToast(toast) {
+    let text = toast.innerText
+    toast.remove()
+    toast = document.createElement("div");
+    toast.id = "toast"
+    toast.className = "kill";
+    toast.innerText = text;
+    toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+    toastLocation.appendChild(toast)
+    setTimeout(() => {
         toast.remove()
-        toast = document.createElement("div");
-        toast.id = "toast"
-        toast.className = "kill";
-        toast.innerText = text;
-        document.body.appendChild(toast)
-        setTimeout(() => {
-            toast.remove()
-        }, 400)
-    }
-    toast.addEventListener('swiped-down', e => event())
-    toast.addEventListener('click', e => event())
-    document.body.appendChild(toast)
+    }, 400)
+}
+
+function replaceToast(toast, text) {
+    toast.remove()
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.className = "replace";
+    toast.innerText = text;
+    toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+    toast.addEventListener('swiped-down', e => killToast(toast))
+    toast.addEventListener('click', e => killToast(toast))
+    toastLocation.appendChild(toast)
     setTimeout(() => {
         toast.remove()
     }, 2900);
+}
+
+let toastLocation = document.getElementsByClassName("flex-column")[0]
+function toast(text) {
+    let oldToast = document.getElementById("toast")
+    if (oldToast && oldToast.innerText == text) {
+        return
+    }
+    if (oldToast && oldToast.getAnimations()[0].currentTime < 2500) {
+        replaceToast(oldToast, text)
+    } else {
+        let toast = document.createElement("div");
+        toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+        toast.id = "toast";
+        toast.innerText = text
+        toast.className = 'show'
+        
+        toast.addEventListener('swiped-down', e => killToast(toast))
+        toast.addEventListener('click', e => killToast(toast))
+        toastLocation.appendChild(toast)
+        setTimeout(() => {
+            toast.remove()
+        }, 2900);    
+    }
 }
 
 
@@ -189,12 +218,6 @@ document.addEventListener('swiped-right', function(e) {
     }
 })
 
-document.getElementById("image-container").addEventListener("click", e => {
-    if (e.target == document.getElementById("image-container")) {
-        let height = e.target.offsetHeight
-        let localPos = e.clientY - e.target.getBoundingClientRect().top
-        if (height / 2 > localPos) {
-            toast(document.title)
-        }    
-    }
+document.getElementById("image-container").addEventListener("click", (e) => {
+    toast(document.title)
 })
