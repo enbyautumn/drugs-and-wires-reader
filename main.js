@@ -15,7 +15,19 @@ function toast(text) {
     toast.id = "toast";
     toast.innerText = text
     toast.className = 'show'
-    toast.addEventListener('swiped-up', e => toast.remove())
+    let event = () => {
+        toast.remove()
+        toast = document.createElement("div");
+        toast.id = "toast"
+        toast.className = "kill";
+        toast.innerText = text;
+        document.body.appendChild(toast)
+        setTimeout(() => {
+            toast.remove()
+        }, 400)
+    }
+    toast.addEventListener('swiped-down', e => event())
+    toast.addEventListener('click', e => event())
     document.body.appendChild(toast)
     setTimeout(() => {
         toast.remove()

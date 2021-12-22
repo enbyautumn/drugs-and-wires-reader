@@ -48,6 +48,7 @@ img {
     height:     8vh;
     max-height: 8vh;
     min-height: 8vh;
+    z-index: 1;
 }
 
 .nav-icon {
@@ -94,7 +95,7 @@ img {
     padding: 1vh;
     box-sizing: border-box;
     left: 10vw;
-    top: 2vh;
+    bottom: 10vh;
 
     font-size: 3vh;
     font-family: 'M PLUS 2', sans-serif;
@@ -109,6 +110,12 @@ img {
     animation: fadein 0.5s, fadeout 0.5s 2.5s;
 }
 
+#toast.kill {
+    visibility: visible;
+    -webkit-animation: fadeout 0.5s;
+    animation: fadeout 0.5s;
+}
+
 @media (prefers-reduced-motion) {
     #toast.show {
         visibility: visible;
@@ -116,22 +123,22 @@ img {
 }
 
 @-webkit-keyframes fadein {
-    from {top: -2vh; opacity: 0;}
-    to {top: 2vh; opacity: 1;}
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 10vh; opacity: 1;}
 }
 
 @keyframes fadein {
-    from {top: -2vh; opacity: 0;}
-    to {top: 2vh; opacity: 1;}
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 10vh; opacity: 1;}
 }
 
 @-webkit-keyframes fadeout {
-    from {top: 2vh; opacity: 1;}
-    to {top: -2vh; opacity: 0;}
+    from {bottom: 10vh; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
 }
 
 @keyframes fadeout {
-    from {top: 2vh; opacity: 1;}
-    to {top: -2vh; opacity: 0;}
+    from {bottom: 10vh; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
 }
   
