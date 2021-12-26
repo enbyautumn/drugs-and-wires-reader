@@ -4,6 +4,9 @@ let cacheFiles = [
     '/index.html',
     '/main.js',
     '/main.css',
+    'https://cdn.jsdelivr.net/npm/swiped-events@1.1.6/dist/swiped-events.min.js',
+    'https://cdn.jsdelivr.net/npm/long-press-event@2.4.4/dist/long-press-event.min.js',
+    'https://fonts.googleapis.com/css2?family=M+PLUS+2:wght@300;400&display=swap',
 ]
 
 self.addEventListener("install", (e) => {
@@ -21,11 +24,3 @@ self.addEventListener("fetch", (e) => {
         })
     )
 })
-
-// self.addEventListener("fetch", (e) => {
-//     e.respondWith(
-//         caches.match(e.request).then((response) => {
-//             return response || fetch(e.request)
-//         })
-//     )
-// })

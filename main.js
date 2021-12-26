@@ -8,6 +8,7 @@ function unescapeHTML(string) {
     return string
         .replace(/&#038;/g, '&')
         .replace(/&#8211;/g, '-')
+        .replace(/&#8217;/g, '’')
 }
 
 function killToast(toast) {
@@ -17,7 +18,7 @@ function killToast(toast) {
     toast.id = "toast"
     toast.className = "kill";
     toast.innerText = text;
-    toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+    toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 100)}vw`
     toastLocation.appendChild(toast)
     setTimeout(() => {
         toast.remove()
@@ -30,7 +31,7 @@ function replaceToast(toast, text) {
     toast.id = "toast";
     toast.className = "replace";
     toast.innerText = text;
-    toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+    toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 100)}vw`
     toast.addEventListener('swiped-down', e => killToast(toast))
     toast.addEventListener('touchstart', e => {
         e.preventDefault()
@@ -139,8 +140,16 @@ async function loadPage(pageNum) {
 
     image.src = await(loadImage(page.imageUrl))
     document.title = page.title
-    image.onload = toast(page.title)
+    image.onload = () => toast(page.title)
     preloadImages(preloadSeek)
+
+    currentType = "other"
+    for (let sectionType in sectionTypes) {
+        if (sectionTypes[sectionType].regex.test(page.pageUrl)) {
+            currentType = sectionType
+        }
+    }
+
     return true
 }
 
@@ -166,6 +175,47 @@ async function preloadImages(seek, i=0, page=currentPage) {
     return preloadImages(seek, i + 1, page)
 }
 
+let sectionTypes = {
+    chapter: {
+        regex: /https:\/\/www\.drugsandwires\.fail\/dnwcomic\/chapter-.*-page.*\//
+    },
+    wirepedia: {
+        regex: /https:\/\/www\.drugsandwires\.fail\/dnwcomic\/wirepedia-.*\//
+    },
+    extras: {
+        regex: /https:\/\/www\.drugsandwires\.fail\/dnwcomic\/dw-extras-.*\//
+    },
+    fear_and_loading: {
+        regex: /https:\/\/www\.drugsandwires\.fail\/dnwcomic\/fear_and_loading-.*\//
+    },
+    guest_art_week: {
+        regex: /https:\/\/www\.drugsandwires\.fail\/dnwcomic\/guest-art-week-.*\//
+    },
+    other: {
+        regex: /a^/
+    }
+}
+
+function nextSection() {
+    let regex = sectionTypes[currentType].regex
+    let searchArray = pageIndex.slice(currentPage + 1, -1)
+    console.log(searchArray[0])
+    let pageNum = currentPage + 1 + searchArray.findIndex(page => !regex.test(page.pageUrl))
+    pageNum = pageNum == -1 ? pageIndex.length - 1 : pageNum
+    loadPage(pageNum)
+    return pageNum
+}
+
+function prevSection() {
+    let regex = sectionTypes[currentType].regex
+    let searchArray = pageIndex.slice(0, currentPage).reverse()
+    let pageNum = searchArray.length - 1 - searchArray.findIndex(page => !regex.test(page.pageUrl))
+    pageNum = pageNum == -1 ? 0 : pageNum
+    loadPage(pageNum)
+    return pageNum
+}
+
+let currentType = "chapter"
 let currentPage = 0;
 let preloadSeek = 5;
 let pageIndex = JSON.parse(localStorage.getItem('pageIndex')) || []
@@ -182,7 +232,6 @@ if (localStorage.getItem('pageNum') !== null) {
     currentPage = 0
 }
 displayPageNumber(currentPage)
-console.log(currentPage)
 
 loadPage(currentPage).then(() => loadIndexOfPages().then(() => loadPage(currentPage)))
 
@@ -195,10 +244,20 @@ window.addEventListener("hashchange", () => {
 });
 
 document.getElementById("full-left").addEventListener("click", (e) => {
+    prevSection()
+})
+
+document.getElementById("full-left").addEventListener("long-press", (e) => {
+    e.preventDefault()
     loadPage(0)
 })
 
 document.getElementById("full-right").addEventListener("click", (e) => {
+    nextSection()
+})
+
+document.getElementById("full-right").addEventListener("long-press", (e) => {
+    e.preventDefault()
     loadPage(pageIndex.length - 1)
 })
 
