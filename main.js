@@ -54,7 +54,7 @@ function toast(text) {
         replaceToast(oldToast, text)
     } else {
         let toast = document.createElement("div");
-        toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+        toast.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 100)}vw`
         toast.id = "toast";
         toast.innerText = text
         toast.className = 'show'
@@ -71,6 +71,19 @@ function toast(text) {
         }, 2900);    
     }
 }
+
+let info = document.getElementById("info")
+document.getElementById("info-button").addEventListener("click", e => {
+    info.style.width = `${(image.offsetWidth * 80)/Math.max(document.documentElement.clientWidth, window.innerWidth || 0)}vw`
+    info.classList.add("show")
+    // setTimeout(() => info.classList.remove("show"), 500)
+})
+
+document.getElementById("close-info").addEventListener("click", e => {
+    info.classList.remove("show")
+    info.classList.add("hide")
+    setTimeout(() => info.classList.remove("hide"), 500)
+})
 
 
 function displayPageNumber(pageNum) {
